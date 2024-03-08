@@ -11,4 +11,10 @@
     <select id="selectUser1s" resultType="kr.co.user.dto.User1DTO">
         SELECT * FROM user1
     </select>
+    <insert id="insertUser1">
+        INSERT INTO USER1 VALUES(#{id}, #{name}, #{hp}, #{age})
+    </insert>
+    <delete id="deleteUser1">
+        DELETE FROM USER1 WHERE id = #{id}
+    </delete>
 </mapper>

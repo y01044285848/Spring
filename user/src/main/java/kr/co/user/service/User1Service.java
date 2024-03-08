@@ -14,7 +14,15 @@ public class User1Service {
     public User1Service(User1Mapper mapper) {
         this.mapper = mapper;
     }
+
+
     public List<User1DTO> selectUser1s(){
         return mapper.selectUser1s();
+    }
+    public void insertUser1(User1DTO user1DTO){
+        mapper.insertUser1(user1DTO);
+    }
+    public void deleteUser1(String id){
+        mapper.deleteUser1(id);
     }
 }
