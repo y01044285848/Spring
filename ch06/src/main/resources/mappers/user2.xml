@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    - namsespace값은 다른 mapper xml 파일과 구분될 수 있는 식별값을 지정
+    - 보통 해당 mapper xml 파일명으로 지정
+-->
+<mapper namespace="kr.co.ch06.mapper.User2Mapper">
+
+    <select id="selectUser2s" resultType="kr.co.ch06.dto.User2DTO">
+        select * from user2;
+    </select>
+
+    <select id="selectUser2" resultType="kr.co.ch06.dto.User2DTO">
+        select * from user2 where uid=#{uid};
+    </select>
+
+    <delete id="deleteUser2">
+        delete from user2 where uid=#{uid};
+    </delete>
+
+    <update id="updateUser2">
+        update user2 set
+        name=#{name},
+        birth=#{birth},
+        addr=#{addr}
+        where
+        `uid`=#{uid};
+    </update>
+
+    <insert id="insertUser2">
+        insert into user2 values (#{uid}, #{name}, #{birth}, #{addr});
+    </insert>
+
+</mapper>
