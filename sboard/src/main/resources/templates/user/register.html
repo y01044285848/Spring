@@ -50,7 +50,7 @@
 
                     console.log('value : ' + input.value);
 
-                    const data = await fetchData(`/sboard/user/${type}/${input.value}`);
+                    const data = await fetchGet(`/sboard/user/${type}/${input.value}`);
 
                     if(data.result > 0){
                         spinner.classList.add('d-none');
@@ -148,7 +148,7 @@
 
                 setTimeout(async () => {
 
-                    const data = await fetchData(`/sboard/user/${type}/${input.value}`);
+                    const data = await fetchGet(`/sboard/user/${type}/${input.value}`);
 
                     if(data.result > 0){
                         spinner.classList.add('d-none');
@@ -194,7 +194,7 @@
                 spinner.classList.remove('d-none');
 
                 setTimeout(async () => {
-                    const data = await fetchData(`/sboard/user/${type}/${input.value}`);
+                    const data = await fetchGet(`/sboard/user/${type}/${input.value}`);
 
                     if(data.result > 0){
                         spinner.classList.add('d-none');
@@ -246,7 +246,7 @@
                     console.log('type : ' + type);
                     console.log('inputEmail value : ' + inputEmail.value);
 
-                    const data = await fetchData(`/sboard/user/${type}/${inputEmail.value}`);
+                    const data = await fetchGet(`/sboard/user/${type}/${inputEmail.value}`);
                     console.log('data : ' + data.result);
 
                     if(data.result > 0){
@@ -266,7 +266,7 @@
             const inputEmailCode = document.getElementById('inputEmailCode');
 
             btnCheckEmailCode.onclick = async function (){
-                const data = await fetchData(`/sboard/email/${inputEmailCode.value}`);
+                const data = await fetchGet(`/sboard/email/${inputEmailCode.value}`);
 
                 if(!data.result){
                     inputEmail.classList.add('is-invalid');
