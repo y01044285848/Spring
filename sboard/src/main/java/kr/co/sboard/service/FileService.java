@@ -24,10 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -119,4 +116,19 @@ public class FileService {
             return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         }
     }
+
+    public ResponseEntity<?> fileDownloadCount(int fno){
+        kr.co.sboard.entity.File file = fileRepository.findById(fno).get();
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("count", file.getDownload());
+
+        return ResponseEntity.ok().body(resultMap);
+
+    }
+
+    public ResponseEntity<?> deleteFile(int no){
+        return null;
+    }
+
 }

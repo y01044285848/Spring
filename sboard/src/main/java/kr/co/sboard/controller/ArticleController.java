@@ -1,6 +1,7 @@
 package kr.co.sboard.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kr.co.sboard.config.AppInfo;
 import kr.co.sboard.dto.ArticleDTO;
 import kr.co.sboard.dto.PageRequestDTO;
 import kr.co.sboard.dto.PageResponseDTO;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +27,7 @@ public class ArticleController {
 
     private final ArticleService articleService;
     private final FileService fileService;
+    private final AppInfo appInfo;
 
     /*
         @ModelAttribute("cate")
@@ -37,12 +40,13 @@ public class ArticleController {
         log.info("pageResponseDTO : " + pageResponseDTO);
 
         model.addAttribute(pageResponseDTO);
-
+        model.addAttribute(appInfo);
         return "/article/list";
     }
 
     @GetMapping("/article/write")
     public String write(@ModelAttribute("cate") String cate){
+
         return "/article/write";
     }
 
@@ -71,11 +75,24 @@ public class ArticleController {
         return "/article/view";
     }
 
+    @GetMapping("/article/modify")
+    public String modify(int no, Model model){
+        ArticleDTO articleDTO = articleService.findById(no);
+        model.addAttribute(articleDTO);
 
-    @GetMapping("/article/fileDownload")
-    public ResponseEntity<?> fileDownload(int fno) {
-        return fileService.fileDownload(fno);
+        return "/article/modify";
     }
 
+    @PutMapping("/article/modify")
+    public String modify(ArticleDTO articleDTO){
+
+        return null;
+    }
+
+    @GetMapping("/article/delete")
+    public String delete(int no){
+        articleService.deleteArticle(no);
+        return "redirect:/index";
+    }
 
 }

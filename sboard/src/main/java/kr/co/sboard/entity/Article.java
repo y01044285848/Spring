@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,6 +37,7 @@ public class Article {
 
     @Builder.Default
     private int hit = 0;
+
 
     private String regip;
 

@@ -79,7 +79,7 @@ public class ArticleService {
         // 파일 첨부 처리
         // 파일 첨부 처리
         List<FileDTO> files = fileService.fileUpload(articleDTO);
-
+        log.info("Test" + files);
         // 파일 첨부 갯수 초기화
         articleDTO.setFile(files.size());
 
@@ -89,7 +89,7 @@ public class ArticleService {
 
         // 저장 후 저장한 엔티티 객체 반환(사실 JPA sava() 메서드는 default로 저장한 Entity를 반환)
         Article savedArticle = articleRepository.save(article);
-        log.info("insertArticle : " + savedArticle.toString());
+        log.info("insertArticle : " + savedArticle);
 
         // 파일 insert
         for(FileDTO fileDTO : files){
@@ -103,6 +103,12 @@ public class ArticleService {
         }
     }
 
-    // fileUpload 메서드 -> FileService 클래스로 이동
+    public void modifyArticle(ArticleDTO articleDTO){
+
+    }
+
+    public void deleteArticle(int no){
+        articleRepository.deleteById(no);
+    }
 
 }

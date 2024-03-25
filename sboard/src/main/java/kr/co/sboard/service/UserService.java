@@ -35,6 +35,10 @@ public class UserService {
         return userMapper.selectCountUser(type, value);
     }
 
+    public UserDTO selectUserForFindId(UserDTO userDTO){
+        return userMapper.selectUserForFindId(userDTO.getName(), userDTO.getEmail());
+    }
+
     public void insertUser(UserDTO userDTO){
 
         String encoded = passwordEncoder.encode(userDTO.getPass());
