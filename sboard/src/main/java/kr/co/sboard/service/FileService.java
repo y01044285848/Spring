@@ -1,10 +1,8 @@
 package kr.co.sboard.service;
 
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import kr.co.sboard.dto.ArticleDTO;
 import kr.co.sboard.dto.FileDTO;
-import kr.co.sboard.entity.Article;
 import kr.co.sboard.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -127,8 +125,19 @@ public class FileService {
 
     }
 
-    public ResponseEntity<?> deleteFile(int no){
-        return null;
-    }
+    public void deleteFile(String delFile){
+        String path = new File(fileUploadPath).getAbsolutePath();
+        File file = new File(path + "/" +delFile);
+        log.info(file.toString());
+        if( file.exists() ){
+            if(file.delete()){
+                log.info("파일삭제 성공");
+            }else{
+                log.info("파일삭제 실패");
+            }
+        }else{
+            log.info("파일이 존재하지 않습니다.");
+        }
 
+    }
 }

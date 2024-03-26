@@ -20,8 +20,10 @@ public class Config {
     private String cate;
     private String boardName;
     private String admin;
+
     @ColumnDefault("0")
     private String total;
+
     @CreationTimestamp
     private String createDate;
 

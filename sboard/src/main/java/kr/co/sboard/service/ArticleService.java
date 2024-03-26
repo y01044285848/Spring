@@ -1,13 +1,12 @@
 package kr.co.sboard.service;
 
-import kr.co.sboard.dto.ArticleDTO;
-import kr.co.sboard.dto.FileDTO;
-import kr.co.sboard.dto.PageRequestDTO;
-import kr.co.sboard.dto.PageResponseDTO;
+import kr.co.sboard.dto.*;
 import kr.co.sboard.entity.Article;
 import kr.co.sboard.entity.File;
+import kr.co.sboard.entity.User;
 import kr.co.sboard.repository.ArticleRepository;
 import kr.co.sboard.repository.FileRepository;
+import kr.co.sboard.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -30,6 +29,7 @@ import java.util.UUID;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final UserRepository userRepository;
     private final FileService fileService;
     private final FileRepository fileRepository;
 
@@ -47,6 +47,22 @@ public class ArticleService {
                 .map(entity -> modelMapper.map(entity, ArticleDTO.class))
                 .toList();
 
+        for(ArticleDTO article :dtoList){
+            Optional<User> optUser = userRepository.findById(article.getWriter());
+
+            /*
+            0326 
+            articleDTO user에 userDTO 주입 
+            */
+            UserDTO userDTO = null;
+            if(optUser.isPresent()){
+                User user = optUser.get();
+                userDTO = modelMapper.map(user, UserDTO.class);
+            }
+            article.setUser(userDTO);
+
+        }
+
         int total = (int) pageArticle.getTotalElements();
 
         return PageResponseDTO.builder()
@@ -60,14 +76,22 @@ public class ArticleService {
 
         Optional<Article> optArticle = articleRepository.findById(no);
 
+
         ArticleDTO articleDTO = null;
 
         if(optArticle.isPresent()){
+
             Article article = optArticle.get();
+            /*
+            0326
+            article 조회수 추가
+            entity setter 이용, 다른 방법 찾아볼것
+             */
+            article.setHit(article.getHit()+1);
+            articleRepository.save(article);
             log.info("findbyid : "+article.toString());
             articleDTO = modelMapper.map(article, ArticleDTO.class);
         }
-
         log.info("articleDTO : " + articleDTO.toString());
 
         return articleDTO;
@@ -77,11 +101,11 @@ public class ArticleService {
     public void insertArticle(ArticleDTO articleDTO){
 
         // 파일 첨부 처리
-        // 파일 첨부 처리
         List<FileDTO> files = fileService.fileUpload(articleDTO);
         log.info("Test" + files);
         // 파일 첨부 갯수 초기화
         articleDTO.setFile(files.size());
+
 
         // articleDTO를 articleEntity로 변환
         Article article = modelMapper.map(articleDTO, Article.class);
@@ -108,6 +132,12 @@ public class ArticleService {
     }
 
     public void deleteArticle(int no){
+        List<File> files = fileRepository.findByAno(no);
+        for(File file:files){
+            String delFile = file.getSName();
+            fileService.deleteFile(delFile);
+            fileRepository.deleteById(file.getFno());
+        }
         articleRepository.deleteById(no);
     }
 

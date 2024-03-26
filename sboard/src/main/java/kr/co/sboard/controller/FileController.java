@@ -25,8 +25,4 @@ public class FileController {
         return fileService.fileDownloadCount(fno);
     }
 
-    @DeleteMapping("/file/delete/{no}")
-    public ResponseEntity<?> deleteComment(@PathVariable("no") int no){
-        return fileService.deleteFile(no);
-    }
 }

@@ -28,6 +28,7 @@ public class ArticleDTO {
     private String regip;
     private LocalDateTime rdate;
 
+
     private List<MultipartFile> files;
 
     private UserDTO user;

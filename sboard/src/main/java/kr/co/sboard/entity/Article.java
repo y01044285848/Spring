@@ -38,7 +38,6 @@ public class Article {
     @Builder.Default
     private int hit = 0;
 
-
     private String regip;
 
     @CreationTimestamp

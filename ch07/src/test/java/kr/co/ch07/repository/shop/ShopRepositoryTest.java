@@ -13,10 +13,10 @@ import java.util.List;
 @SpringBootTest
 public class ShopRepositoryTest {
 
-    @Autowired private CustomerReopsitory customerReopsitory;
-    @Autowired private OrderReopsitory orderReopsitory;
-    @Autowired private OrderItemReopsitory orderItemReopsitory;
-    @Autowired private ProductReopsitory productReopsitory;
+    @Autowired private CustomerRepository customerRepository;
+    @Autowired private OrderRepository orderReopsitory;
+    @Autowired private OrderItemRepository orderItemReopsitory;
+    @Autowired private ProductRepository productReopsitory;
 
     @Test
     public void selectOrders(){

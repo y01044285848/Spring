@@ -5,6 +5,8 @@ import kr.co.sboard.config.AppInfo;
 import kr.co.sboard.dto.ArticleDTO;
 import kr.co.sboard.dto.PageRequestDTO;
 import kr.co.sboard.dto.PageResponseDTO;
+import kr.co.sboard.entity.Config;
+import kr.co.sboard.repository.ConfigRepository;
 import kr.co.sboard.service.ArticleService;
 import kr.co.sboard.service.FileService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,7 +29,6 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
-    private final FileService fileService;
     private final AppInfo appInfo;
 
     /*
@@ -34,10 +36,12 @@ public class ArticleController {
          - modelAttribute("cate", cate)와 동일
     */
     @GetMapping("/article/list")
-    public String list(Model model, PageRequestDTO pageRequestDTO){
+    public String list(Model model, String cate, PageRequestDTO pageRequestDTO){
 
         PageResponseDTO pageResponseDTO = articleService.findByParentAndCate(pageRequestDTO);
         log.info("pageResponseDTO : " + pageResponseDTO);
+
+
 
         model.addAttribute(pageResponseDTO);
         model.addAttribute(appInfo);
@@ -45,7 +49,7 @@ public class ArticleController {
     }
 
     @GetMapping("/article/write")
-    public String write(@ModelAttribute("cate") String cate){
+    public String write(Model model, String cate){
 
         return "/article/write";
     }
@@ -63,11 +67,11 @@ public class ArticleController {
 
         articleService.insertArticle(articleDTO);
 
-        return "redirect:/article/list";
+        return "redirect:/article/list" + "?cate=" + articleDTO.getCate();
     }
 
     @GetMapping("/article/view")
-    public String view(int no, Model model){
+    public String view(Model model, String cate, int no){
 
         ArticleDTO articleDTO = articleService.findById(no);
         model.addAttribute(articleDTO);
@@ -85,8 +89,8 @@ public class ArticleController {
 
     @PutMapping("/article/modify")
     public String modify(ArticleDTO articleDTO){
-
-        return null;
+        log.info("/////////////////////////"+articleDTO+"/////////////////////////////");
+        return "redirect:/index";
     }
 
     @GetMapping("/article/delete")

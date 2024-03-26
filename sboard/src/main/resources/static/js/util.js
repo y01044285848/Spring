@@ -48,7 +48,8 @@ async function fetchPost(url, jsonData){
         return data;
 
     }catch (err) {
-        console.log(err)
+        console.log(err);
+        return null;
     }
 }
 
@@ -108,9 +109,9 @@ function alertModal(message){
 }
 
 function confirmModal(message){
-
+    document.getElementById('confirmModal').getElementsByClassName('modal-body')[0].innerText = message;
     const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
-    modal.getElementsByClassName('modal-body')[0].innerText = message;
+    //modal.getElementsByClassName('modal-body')[0].innerText = message;
     modal.show(); // 모달 열기
 
     // 결과값 반환

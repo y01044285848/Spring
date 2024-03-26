@@ -40,7 +40,7 @@
                     const data = fetchDelete(`/sboard/comment/${no}`);
 
                     if(data){
-                        //alertModal("삭제 되었습니다.");
+                        await confirmModal('삭제 하시겠습니까?');
                         comment.remove();
                     }
 
@@ -82,6 +82,7 @@
 
                     const comment = e.target.closest('.comment');
                     const textarea = comment.getElementsByTagName('textarea')[0];
+                    const btnRemove = comment.getElementsByClassName('btnRemove')[0];
                     const no = comment.dataset.no;
 
                     const jsonData = {
@@ -95,6 +96,11 @@
                     const data = fetchPut(`/sboard/comment`, jsonData);
 
                     console.log(data);
+
+                    // 수정 완료 후 수정 전으로 재설정
+                    textarea.readOnly = true;
+                    btnRemove.innerText = "삭제"
+                    btnRemove.dataset.mode = 'remove';
 
                     alertModal("수정이 완료 되었습니다.");
 
@@ -164,7 +170,7 @@
                 console.log(data);
 
                 // 댓글목록 동적처리
-                const commentArticle = `<div class="mb-3 comment" data-no="${comment.no}">
+                const commentArticle = `<div class="mb-3 comment" data-no="${data.no}">
                                                 <ol class="breadcrumb mb-1">
                                                     <li class="breadcrumb-item">${data.writer}</li>
                                                     <li class="breadcrumb-item">${data.rdate.substring(0, 10)}</li>
@@ -172,13 +178,15 @@
 
                                                 <textarea class="form-control" rows="3" readonly>${data.content}</textarea>
                                                 <div class="text-end mt-1">
-                                                    <button type="button" class="btn btn-warning btn-sm" data-no="${data.no}">수정</button>
-                                                    <button type="button" class="btn btn-danger btn-sm" data-no="${data.no}">삭제</button>
+                                                    <button type="button" class="btn btn-warning btn-sm btnModify" data-mode="modify" data-no="${data.no}">수정</button>
+                                                    <button type="button" class="btn btn-danger btn-sm btnRemove" data-mode="remove" data-no="${data.no}">삭제</button>
                                                 </div>
                                             </div>`;
 
+                commentForm.content.value = "";
                 // 태그 문자열 삽입
                 commentList.insertAdjacentHTML('beforeend', commentArticle);
+
             }
         }
     </script>
@@ -189,7 +197,7 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
-            OOO 글보기
+            [[${boardName}]] 글보기
         </div>
         <div class="card-body">
 
@@ -222,7 +230,7 @@
     <div class="text-end">
         <a th:href="@{/article/modify(no=${articleDTO.no})}" class="btn btn-primary" >수정</a>
         <a th:href="@{/article/delete(no=${articleDTO.no})}" class="btn btn-primary" >삭제</a>
-        <a th:href="@{/article/list}" class="btn btn-primary" id="btnSubmit">목록</a>
+        <a th:href="@{/article/list(cate=${articleDTO.cate})}" class="btn btn-primary" id="btnSubmit">목록</a>
     </div>
 
     <!-- 댓글목록 시작 -->

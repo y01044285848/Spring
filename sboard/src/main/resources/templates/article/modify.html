@@ -7,6 +7,7 @@
     <script>
         window.onload = function (){
             const btnSubmit = document.getElementById('btnSubmit');
+            //const deletefile = document.getElementById('deleteFile');
 
             var deleteArray = new Array();
 
@@ -32,10 +33,13 @@
                     console.log('no : ' + no);
 
                     deleteArray.push(no);
-
+                    let deleteString = "";
                     file.remove();
+                    for(let file of deleteArray){
+                        deleteString += file + ",";
+                    }
 
-
+                    //deletefile.value=deleteString;
                     // DELETE용 fetch 함수 정의
                     //const data = fetchDelete(`/sboard/file/${no}`);
 
@@ -50,13 +54,14 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
-            OOO 글수정
+            글수정
         </div>
         <div class="card-body">
 
-            <form name="formWrite" th:action="@{/article/write}" method="post" enctype="multipart/form-data">
+            <form name="formWrite" th:action="@{/article/modify}" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="writer" th:value="${#authentication.principal.user.uid}">
                 <input type="hidden" name="cate" th:value="${articleDTO.cate}">
+                <!--<input type="hidden" name="deleteFile" id="deleteFile">-->
                 <div class="mb-3">
                     <label for="exampleFormControlInput1" class="form-label">글제목</label>
                     <input type="text" th:value="${articleDTO.title}" class="form-control" id="exampleFormControlInput1" name="title" placeholder="글 제목 입력">
@@ -92,7 +97,7 @@
 
     <div class="text-end">
         <a th:href="@{/article/list}" class="btn btn-secondary">취소</a>
-        <a th:href="@{/article/write}" class="btn btn-primary" id="btnSubmit">글수정</a>
+        <a th:href="@{/article/modify}" class="btn btn-primary" id="btnSubmit">글수정</a>
     </div>
     <!-- 내용 끝 -->
 </div>
