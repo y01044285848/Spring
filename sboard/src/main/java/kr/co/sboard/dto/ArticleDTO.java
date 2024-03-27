@@ -34,4 +34,6 @@ public class ArticleDTO {
     private UserDTO user;
     private List<File> fileList;
 
+    private String nick;
+
 }

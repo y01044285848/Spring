@@ -48,7 +48,9 @@
     </div>
 
     <div class="text-end">
-        <a th:href="@{/article/list(cate=${param.cate})}" class="btn btn-secondary">취소</a>
+        <a th:href="@{/article/list(cate=${pageResponseDTO.cate},
+                                        type=${pageResponseDTO.type},
+                                        keyword=${pageResponseDTO.keyword})}" class="btn btn-secondary">취소</a>
         <a th:href="@{/article/write}" class="btn btn-primary" id="btnSubmit">글등록</a>
     </div>
     <!-- 내용 끝 -->

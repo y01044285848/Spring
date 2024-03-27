@@ -45,6 +45,7 @@ public class FileService {
         log.info("fileUpload...1");
 
         // 첨부한 파일 갯수만큼 반복 처리
+        log.info(articleDTO.getFiles().toString());
         for(MultipartFile mf : articleDTO.getFiles()){
             log.info("fileUpload...2");
 
