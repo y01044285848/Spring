@@ -38,9 +38,16 @@ public class ArticleController {
     @GetMapping("/article/list")
     public String list(Model model, String cate, PageRequestDTO pageRequestDTO){
 
-        PageResponseDTO pageResponseDTO = articleService.findByParentAndCate(pageRequestDTO);
-        log.info("pageResponseDTO : " + pageResponseDTO);
+        PageResponseDTO pageResponseDTO = null;
 
+        if(pageRequestDTO.getKeyword() == null){
+            // 일반 글 목록 조회
+            pageResponseDTO = articleService.selectArticles(pageRequestDTO);
+            log.info("pageResponseDTO : " + pageResponseDTO);
+        }else{
+            // 검색 글 목록 조회
+            pageResponseDTO = articleService.searchArticles(pageRequestDTO);
+        }
 
 
         model.addAttribute(pageResponseDTO);
@@ -49,7 +56,13 @@ public class ArticleController {
     }
 
     @GetMapping("/article/write")
-    public String write(Model model, String cate){
+    public String write(Model model, String cate, PageRequestDTO pageRequestDTO){
+
+        PageResponseDTO pageResponseDTO = PageResponseDTO.builder()
+                .pageRequestDTO(pageRequestDTO)
+                .build();
+
+        model.addAttribute(pageResponseDTO);
 
         return "/article/write";
     }
@@ -87,9 +100,19 @@ public class ArticleController {
         return "/article/modify";
     }
 
-    @PutMapping("/article/modify")
-    public String modify(ArticleDTO articleDTO){
-        log.info("/////////////////////////"+articleDTO+"/////////////////////////////");
+    @PostMapping("/article/modify")
+    public String modify(ArticleDTO articleDTO, String deleteFile){
+        int delFileCount = 0;
+        if(deleteFile != null && !deleteFile.isEmpty() && !deleteFile.isBlank()){
+
+            String[] delArr = deleteFile.split(",");
+            delFileCount = delArr.length;
+
+            articleService.modifyArticleFile(delArr);
+        }
+        articleService.modifyArticle(articleDTO, delFileCount);
+
+
         return "redirect:/index";
     }
 

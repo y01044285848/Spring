@@ -84,6 +84,28 @@ public class UserController {
         return ResponseEntity.ok().body(resultMap);
     }
 
+    @ResponseBody
+    @GetMapping("/user/{name}/{email}")
+    public ResponseEntity<?> findId(HttpSession session,
+                                    @PathVariable("name") String name,
+                                    @PathVariable("email") String email){
+
+        int count = userService.selectUserForFindId(name, email);
+        log.info("count : " + count);
+
+        // 이름과 이메일이 일치하는사람이 한명이면 인증코드 이메일 전송
+        if(count == 1){
+            log.info("email : " + email);
+            userService.sendEmailCode(session, email);
+        }
+
+        // Json 생성
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("result", count);
+
+        return ResponseEntity.ok().body(resultMap);
+    }
+
     // 이메일 인증 코드 검사
     @ResponseBody
     @GetMapping("/email/{code}")

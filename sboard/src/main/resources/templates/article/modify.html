@@ -7,7 +7,8 @@
     <script>
         window.onload = function (){
             const btnSubmit = document.getElementById('btnSubmit');
-            //const deletefile = document.getElementById('deleteFile');
+            // 삭제할 파일 리스트
+            const deletefile = document.getElementById('deleteFile');
 
             var deleteArray = new Array();
 
@@ -16,34 +17,34 @@
                 document.formWrite.submit();
             }
 
-            document.addEventListener('click', async function(e) {
+            document.addEventListener('click', function(e) {
+                e.preventDefault();
+                if(true){
+                    // 이벤트 대상의 클래스값이 remove일 경우
+                    if (e.target.dataset.mode == 'remove') {
 
-                alert(deleteArray);
 
-                // 이벤트 대상의 클래스값이 remove일 경우
-                if (e.target.dataset.mode == 'remove') {
-                    e.preventDefault();
+                        // 해당 삭제에서 가장 가까운 부모 comment 문서객체 생성
 
-                    // 해당 삭제에서 가장 가까운 부모 comment 문서객체 생성
+                        const file = e.target.closest('.files');
 
-                    const file = e.target.closest('.files');
+                        const no = e.target.dataset.no;
+                        console.log('no : ' + no);
 
-                    const no = e.target.dataset.no;
-                    alert(no);
-                    console.log('no : ' + no);
+                        deleteArray.push(no);
+                        let deleteString = "";
+                        file.remove();
+                        for(let file of deleteArray){
+                            deleteString += file + ",";
+                        }
 
-                    deleteArray.push(no);
-                    let deleteString = "";
-                    file.remove();
-                    for(let file of deleteArray){
-                        deleteString += file + ",";
+                        deletefile.value=deleteString;
+                        // DELETE용 fetch 함수 정의
+                        //const data = fetchDelete(`/sboard/file/${no}`);
+
                     }
-
-                    //deletefile.value=deleteString;
-                    // DELETE용 fetch 함수 정의
-                    //const data = fetchDelete(`/sboard/file/${no}`);
-
                 }
+
             })
         }
     </script>
@@ -61,7 +62,8 @@
             <form name="formWrite" th:action="@{/article/modify}" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="writer" th:value="${#authentication.principal.user.uid}">
                 <input type="hidden" name="cate" th:value="${articleDTO.cate}">
-                <!--<input type="hidden" name="deleteFile" id="deleteFile">-->
+                <input type="hidden" name="no" th:value="${articleDTO.no}"/>
+                <input type="hidden" name="deleteFile" id="deleteFile">
                 <div class="mb-3">
                     <label for="exampleFormControlInput1" class="form-label">글제목</label>
                     <input type="text" th:value="${articleDTO.title}" class="form-control" id="exampleFormControlInput1" name="title" placeholder="글 제목 입력">

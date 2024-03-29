@@ -1,5 +1,6 @@
 package kr.co.sboard.service;
 
+import com.querydsl.core.Tuple;
 import kr.co.sboard.dto.*;
 import kr.co.sboard.entity.Article;
 import kr.co.sboard.entity.File;
@@ -36,15 +37,22 @@ public class ArticleService {
     // RootConfig Bean 생성/등록
     private final ModelMapper modelMapper;
 
-    public PageResponseDTO findByParentAndCate(PageRequestDTO pageRequestDTO){
+    public PageResponseDTO selectArticles(PageRequestDTO pageRequestDTO){
 
         Pageable pageable = pageRequestDTO.getPageable("no");
 
-        Page<Article> pageArticle = articleRepository.findByParentAndCate(0, pageRequestDTO.getCate(), pageable);
+        Page<Tuple> pageArticle = articleRepository.selectArticles(pageRequestDTO, pageable);
 
 
         List<ArticleDTO> dtoList = pageArticle.getContent().stream()
-                .map(entity -> modelMapper.map(entity, ArticleDTO.class))
+                .map(tuple -> {
+                    Article article = tuple.get(0, Article.class);
+                    String nick = tuple.get(1,String.class);
+                    article.setNick(nick);
+
+                    return modelMapper.map(article, ArticleDTO.class);
+                }
+                )
                 .toList();
 
         for(ArticleDTO article :dtoList){
@@ -53,6 +61,51 @@ public class ArticleService {
             /*
             0326 
             articleDTO user에 userDTO 주입 
+            */
+            UserDTO userDTO = null;
+            if(optUser.isPresent()){
+                User user = optUser.get();
+                userDTO = modelMapper.map(user, UserDTO.class);
+            }
+            article.setUser(userDTO);
+
+        }
+
+        int total = (int) pageArticle.getTotalElements();
+
+        return PageResponseDTO.builder()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(dtoList)
+                .total(total)
+                .build();
+    }
+
+    public PageResponseDTO searchArticles(PageRequestDTO pageRequestDTO){
+
+        Pageable pageable = pageRequestDTO.getPageable("no");
+
+        Page<Tuple> pageArticle = articleRepository.searchArticles(pageRequestDTO, pageable);
+
+
+        List<ArticleDTO> dtoList = pageArticle.getContent().stream()
+                .map(tuple -> {
+                            Article article = tuple.get(0, Article.class);
+                            String nick = tuple.get(1,String.class);
+                            article.setNick(nick);
+
+                            return modelMapper.map(article, ArticleDTO.class);
+                        }
+                )
+                .toList();
+
+        for(ArticleDTO article :dtoList){
+            Optional<User> optUser = userRepository.findById(article.getWriter());
+
+            /*
+            0326
+            articleDTO user에 userDTO 주입
+            0328
+            join 구문 추가로 삭제 예정
             */
             UserDTO userDTO = null;
             if(optUser.isPresent()){
@@ -127,10 +180,6 @@ public class ArticleService {
         }
     }
 
-    public void modifyArticle(ArticleDTO articleDTO){
-
-    }
-
     public void deleteArticle(int no){
         List<File> files = fileRepository.findByAno(no);
         for(File file:files){
@@ -139,6 +188,64 @@ public class ArticleService {
             fileRepository.deleteById(file.getFno());
         }
         articleRepository.deleteById(no);
+    }
+
+    /*
+    0327 추가
+    수정에서 파일 추가될 경우 파일 업로드 처리
+    글에 첨부된 파일 개수 동기화
+    */
+    public void modifyArticle(ArticleDTO articleDTO, int delFileCount){
+
+        // 파일 첨부 처리
+        List<FileDTO> files = fileService.fileUpload(articleDTO);
+        log.info("Test" + files);
+        // 파일 첨부 갯수 초기화
+        Optional<Article> optArticle = articleRepository.findById(articleDTO.getNo());
+        log.info(optArticle+"oparticle");
+        if(optArticle.isPresent()){
+            Article article = optArticle.get();
+            article.setTitle(articleDTO.getTitle());
+            article.setContent(articleDTO.getContent());
+            article.setFile(article.getFile() + articleDTO.getFile() - delFileCount);
+
+            Article savedArticle = articleRepository.save(article);
+            log.info("upload Test2");
+            for(FileDTO fileDTO : files){
+
+                fileDTO.setAno(savedArticle.getNo());
+
+                // 여기서 에러나는데 RootConfig 파일에 ModelMapper 설정에 이거 추가 -> .setMatchingStrategy(MatchingStrategies.STRICT)
+                File file = modelMapper.map(fileDTO, File.class);
+
+                fileRepository.save(file);
+                log.info("upload Test2");
+            }
+        }
+
+    }
+
+    public void modifyArticleFile(String[] delFiles){
+
+        /*
+        0327
+        수정에서 파일 삭제시
+        파일 DB, upload파일 삭제
+         */
+
+        for(String file : delFiles){
+            int fileNo = Integer.parseInt(file);
+            Optional<File> optDelFile = fileRepository.findById(fileNo);
+            if(optDelFile.isPresent()){
+                File delFile = optDelFile.get();
+
+                fileService.deleteFile(delFile.getSName());
+            }
+            fileRepository.deleteById(fileNo);
+        }
+
+
+
     }
 
 }

@@ -32,6 +32,8 @@ public class Article {
     private String content;
     private String writer;
 
+    private String nick;
+
     @Builder.Default
     private int file = 0;
 

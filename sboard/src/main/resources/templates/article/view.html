@@ -7,6 +7,7 @@
     <script th:inline="javascript">
         window.onload = function (){
 
+
             // 파일 다운로드 카운트 동적처리
             const fileLinks = document.getElementsByClassName('fileLink');
 
@@ -126,10 +127,13 @@
                 const comments = await fetchGet(`/sboard/comment/${no}`);
                 console.log('comments : ' + comments);
                 commentPlaceholder.remove();
+
+                alert("aaaa");
+
                 for(const comment of comments){
-
-
-                    const commentArticle = `<div class="mb-3 comment" data-no="${comment.no}">
+                    let commentArticle;
+                    if(document.getElementById('userCheck').value ==comment.writer){
+                        commentArticle = `<div class="mb-3 comment" data-no="${comment.no}">
                                                     <ol class="breadcrumb mb-1">
                                                         <li class="breadcrumb-item">${comment.writer}</li>
                                                         <li class="breadcrumb-item">${comment.rdate.substring(0, 10)}</li>
@@ -141,6 +145,19 @@
                                                         <button type="button" class="btn btn-danger btn-sm btnRemove" data-mode="remove" data-no="${comment.no}">삭제</button>
                                                     </div>
                                                 </div>`;
+                    }else{
+                        commentArticle = `<div class="mb-3 comment" data-no="${comment.no}">
+                                                    <ol class="breadcrumb mb-1">
+                                                        <li class="breadcrumb-item">${comment.writer}</li>
+                                                        <li class="breadcrumb-item">${comment.rdate.substring(0, 10)}</li>
+                                                    </ol>
+
+                                                    <textarea class="form-control" rows="3" readonly>${comment.content}</textarea>
+                                                    <div class="text-end mt-1">
+                                                    </div>
+                                                </div>`;
+                    }
+
 
                     // 태그 문자열 삽입
                     commentList.insertAdjacentHTML('beforeend', commentArticle);
@@ -200,7 +217,7 @@
             [[${boardName}]] 글보기
         </div>
         <div class="card-body">
-
+        <input type="hidden" th:value="${#authentication.principal.user.uid}" id="userCheck"/>
             <form>
                 <div class="mb-3">
                     <label for="exampleFormControlInput1" class="form-label">글제목</label>
@@ -228,8 +245,8 @@
     </div>
 
     <div class="text-end">
-        <a th:href="@{/article/modify(no=${articleDTO.no})}" class="btn btn-primary" >수정</a>
-        <a th:href="@{/article/delete(no=${articleDTO.no})}" class="btn btn-primary" >삭제</a>
+        <a th:if="${#authentication.principal.user.uid} == ${articleDTO.writer}" th:href="@{/article/modify(no=${articleDTO.no})}" class="btn btn-primary" >수정</a>
+        <a th:if="${#authentication.principal.user.uid} == ${articleDTO.writer}" th:href="@{/article/delete(no=${articleDTO.no})}" class="btn btn-primary" >삭제</a>
         <a th:href="@{/article/list(cate=${articleDTO.cate})}" class="btn btn-primary" id="btnSubmit">목록</a>
     </div>
 

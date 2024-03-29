@@ -35,8 +35,8 @@ public class UserService {
         return userMapper.selectCountUser(type, value);
     }
 
-    public UserDTO selectUserForFindId(UserDTO userDTO){
-        return userMapper.selectUserForFindId(userDTO.getName(), userDTO.getEmail());
+    public int selectUserForFindId(String name, String email){
+        return userMapper.selectUserForFindId(name, email);
     }
 
     public void insertUser(UserDTO userDTO){
